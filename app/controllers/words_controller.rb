@@ -10,7 +10,7 @@ class WordsController < ApplicationController
   end
 
   def create
-    @word = current_user.words.new(word_params)
+    @word = current_user.Word.new(word_params)
     if @word.save
       redirect_to words_path, notice: "Word was successfully created."
     else
