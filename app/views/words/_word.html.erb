@@ -1,0 +1,5 @@
+<div data-controller="insert-in-list" id="<%= dom_id(word) %>">
+  <h3><%= word.title %></h3>
+  <p><strong>Definition:</strong> <%= word.description %></p>
+  <%= link_to "Delete", word_path(word), method: :delete, remote: true, data: { turbo_frame: dom_id(word), action: "click->insert-in-list#deleteWord" } %>
+</div>

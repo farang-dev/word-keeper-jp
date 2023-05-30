@@ -3,9 +3,6 @@ Rails.application.routes.draw do
 
   root to: "words#index"
 
-  resources :users do
-    resources :words
-  end
-
-  resources :words, only: [:destroy]
+  resources :words, only: [:index, :create, :destroy]
+  # Other routes for your application
 end

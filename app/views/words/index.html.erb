@@ -1,9 +1,9 @@
+<!-- app/views/words/index.html.erb -->
 <h1>Vocabulary List</h1>
-<%= render 'form' %>
-<% @words.each do |word| %>
-  <div>
-    <h3><%= word.title %></h3>
-    <p><%= word.description %></p>
-    <%= link_to 'Delete', word_path(word), method: :delete, data: { confirm: 'Are you sure?' } %>
+<div data-controller="insert-in-list">
+  <%= render partial: "form", locals: { word: Word.new } %>
+  <div data-insert-in-list-target="descriptions">
+    <%= turbo_stream_from "results" %>
+    <%= render partial: "word", collection: @words %>
   </div>
-<% end %>
+</div>

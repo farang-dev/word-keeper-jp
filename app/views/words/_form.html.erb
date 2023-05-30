@@ -1,5 +1,9 @@
-<%= simple_form_for([current_user, @word]) do |f| %>
+<%= simple_form_for([current_user, word], url: words_path,
+                    data: {
+                      turbo_frame: "results",
+                      insert_in_list_target: "form",
+                      action: "submit->insert-in-list#send"
+                    }) do |f| %>
   <%= f.input :title %>
-  <%= f.input :description, as: :text %>
   <%= f.button :submit %>
 <% end %>
