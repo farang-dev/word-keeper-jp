@@ -7,7 +7,10 @@ class WordsController < ApplicationController
   end
 
   def create
-    @word = Word.new(word_params)
+    word_title = params[:word][:title]
+    description = fetch_word_description(word_title)
+
+    @word = Word.new(title: word_title, description: description)
     @word.user = current_user
 
     respond_to do |format|
@@ -21,8 +24,14 @@ class WordsController < ApplicationController
     end
   end
 
-
-
+  def fetch_word_description(word)
+    response = URI.open("https://dictionaryapi.dev/api/v2/entries/en/#{word}")
+    json = JSON.parse(response.read)
+    json[0]['meanings'][0]['definitions'][0]['definition']
+  rescue StandardError
+    # Handle the case where the API request fails or no definition is found
+    nil
+  end
 
 
   def destroy

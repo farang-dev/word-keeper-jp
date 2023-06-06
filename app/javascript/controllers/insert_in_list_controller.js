@@ -1,39 +1,23 @@
-send(event) {
-  event.preventDefault();
+// app/javascript/controllers/insert-in-list_controller.js
+import { Controller } from "stimulus";
 
-  const wordTitle = this.formTarget.querySelector('input[name="word[title]"]').value;
-  const wordDescription = this.formTarget.querySelector('input[name="word[description]"]').value;
+export default class extends Controller {
+  static targets = ["descriptions"];
 
-  // Make the API request to retrieve the definition here
+  loadData() {
+    const results = this.descriptionsTarget;
+    const wordTitle = document.querySelector('input[name="word[title]"]').value;
 
-  const formData = new FormData();
-  formData.append("word[title]", wordTitle);
-  formData.append("word[description]", wordDescription);
+    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${wordTitle}`)
+      .then(response => response.json())
+      .then((data) => {
+        const wordDescription = data[0].meanings[0].definitions[0].definition;
+        const wordTag = `<li class="list-inline-item">
+          <p>${wordTitle}</p>
+          <p>${wordDescription}</p>
+        </li>`;
+        results.insertAdjacentHTML("beforeend", wordTag);
 
-  fetch(this.formTarget.action, {
-    method: "POST",
-    headers: { "Accept": "application/json" },
-    body: new FormData(this.formTarget)
-  })
-  .then(response => response.json())
-  .then((data) => {
-    if (data.inserted_item) {
-      this.itemsTarget.insertAdjacentHTML("beforeend", data.inserted_item)
-    }
-    this.formTarget.outerHTML = data.form
-  })
-
-    deleteWord(event) {
-      event.preventDefault();
-      const wordElement = event.currentTarget.closest("[data-controller='insert-in-list']");
-      const wordId = wordElement.dataset.wordId;
-
-      fetch(`/words/${wordId}`, { method: "DELETE" })
-        .then(() => {
-          wordElement.remove();
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }
+      });
+  }
 }
