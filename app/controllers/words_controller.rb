@@ -1,10 +1,11 @@
-class WordsController < ApplicationController
-  before_action :set_word, only: [:destroy]
 
+
+class WordsController < ApplicationController
   def index
-    @words = current_user.words
+    @words = Word.all
     @word = Word.new
   end
+
 
   def create
     word_title = params[:word][:title]
@@ -24,32 +25,28 @@ class WordsController < ApplicationController
     end
   end
 
-  def fetch_word_description(word)
-    response = URI.open("https://dictionaryapi.dev/api/v2/entries/en/#{word}")
-    json = JSON.parse(response.read)
-    json[0]['meanings'][0]['definitions'][0]['definition']
-  rescue StandardError
-    # Handle the case where the API request fails or no definition is found
-    nil
-  end
-
-
   def destroy
-    if @word
-      @word.destroy
-      redirect_to words_path, notice: "Word was successfully deleted."
+    @word = Word.find(params[:id])
+    @word.destroy
+    redirect_to words_path
+  end
+
+  def fetch_word_description(word)
+    response = URI.open("https://api.dictionaryapi.dev/api/v2/entries/en/#{word}")
+    json = JSON.parse(response.read)
+    definition = json[0]['meanings'][0]['definitions'][0]['definition']
+    return definition if definition.present?
+
+    # Handle the case where no definition is found
+    'No definition available'
+  rescue OpenURI::HTTPError => e
+    case e.io.status[0]
+    when "404"
+      'Unable to fetch definition: Word not found'
+    when "500"
+      'Unable to fetch definition: Internal server error'
     else
-      redirect_to words_path, alert: "Unable to find the specified word."
+      'Unable to fetch definition: HTTP Error'
     end
-  end
-
-  private
-
-  def word_params
-    params.require(:word).permit(:title, :description)
-  end
-
-  def set_word
-    @word = current_user.words.find_by(id: params[:id])
   end
 end
