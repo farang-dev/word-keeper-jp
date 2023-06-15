@@ -1,11 +1,10 @@
-
+require 'open-uri'
 
 class WordsController < ApplicationController
   def index
-    @words = Word.all
+    @words = Word.order(created_at: :desc)
     @word = Word.new
   end
-
 
   def create
     word_title = params[:word][:title]

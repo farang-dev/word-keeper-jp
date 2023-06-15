@@ -24,6 +24,8 @@ gem "font-awesome-sass", "~> 6.1"
 # Gemfile
 gem "devise"
 
+gem "webpacker"
+
 # Gemfile
 gem "simple_form"
 
@@ -38,6 +40,8 @@ gem "stimulus-rails"
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
+
+gem 'rails-ujs'
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"

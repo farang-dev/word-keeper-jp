@@ -1,9 +1,15 @@
 <div data-insert-in-list-target="descriptions">
   <%= render partial: "form", locals: { word: @word } %>
   <% @words.each do |word| %>
-    <div class="word">
-      <h3><%= word.title %></h3>
-      <p><strong>Definition:</strong> <%= word.description %></p>
+    <div class="card">
+      <div class="word card-body">
+        <h3><%= word.title %></h3>
+        <p><strong>Definition:</strong> <%= word.description %></p>
+        <p class="card-timestamp">Saved on: <%= word.created_at.strftime("%B %d, %Y") %></p>
+        <%= form_with model: word, url: word_path(word), method: :delete, data: { turbo_frame: "results", turbo_confirm: "Delete post?" } do |f| %>
+          <%= f.submit "Delete" %>
+        <% end %>
+      </div>
     </div>
   <% end %>
 </div>
