@@ -1,15 +1,20 @@
-<div data-insert-in-list-target="descriptions">
-  <%= render partial: "form", locals: { word: @word } %>
-  <% @words.each do |word| %>
-    <div class="card">
-      <div class="word card-body">
-        <h3><%= word.title %></h3>
-        <p><strong>Definition:</strong> <%= word.description %></p>
-        <p class="card-timestamp">Saved on: <%= word.created_at.strftime("%B %d, %Y") %></p>
-        <%= form_with model: word, url: word_path(word), method: :delete, data: { turbo_frame: "results", turbo_confirm: "Delete post?" } do |f| %>
-          <%= f.submit "Delete" %>
-        <% end %>
-      </div>
+<div class="d-flex align-items-center">
+  <div class="container">
+    <h1 class="logo-text text-center mb-0">Word Keeper - Eng ver.</h1>
+    <div class="card-container">
+      <%= render partial: "form", locals: { word: @word } %>
+      <% @words.each do |word| %>
+        <div class="card my-3">
+          <div class="word card-body">
+            <h3><%= word.title %></h3>
+            <p><strong>Definition:</strong> <%= word.description %></p>
+            <p class="card-timestamp">Saved on: <%= word.created_at.strftime("%B %d, %Y") %></p>
+            <%= form_with model: word, url: word_path(word), method: :delete, data: { turbo_frame: "results", turbo_confirm: "Delete the word?" } do |f| %>
+              <%= f.submit "Done" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
     </div>
-  <% end %>
+  </div>
 </div>
