@@ -8,9 +8,9 @@
           <div class="word card-body">
             <h3><%= word.title %></h3>
             <p><strong>Definition:</strong> <%= word.description %></p>
-            <p class="card-timestamp">Saved on: <%= word.created_at.strftime("%B %d, %Y") %></p>
+            <p class="card-timestamp"><%= word.created_at.strftime("%B %d, %Y") %></p>
             <%= form_with model: word, url: word_path(word), method: :delete, data: { turbo_frame: "results", turbo_confirm: "Delete the word?" } do |f| %>
-              <%= f.submit "Done" %>
+              <%= f.submit "Done!" %>
             <% end %>
           </div>
         </div>
