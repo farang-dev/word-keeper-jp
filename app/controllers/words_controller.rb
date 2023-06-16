@@ -2,7 +2,7 @@ require 'open-uri'
 
 class WordsController < ApplicationController
   def index
-    @words = Word.order(created_at: :desc)
+    @words = current_user.words.order(created_at: :desc)
     @word = Word.new
   end
 
