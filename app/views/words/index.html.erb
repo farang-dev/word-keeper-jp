@@ -10,7 +10,7 @@
             <p><strong>Definition:</strong> <%= word.description %></p>
             <p class="card-timestamp"><%= word.created_at.strftime("%B %d, %Y") %></p>
             <%= form_with model: word, url: word_path(word), method: :delete, data: { turbo_frame: "results", turbo_confirm: "Delete the word?" } do |f| %>
-              <%= f.submit "Done!" %>
+              <%= f.submit "Done!", class: "button-done" %>
             <% end %>
           </div>
         </div>
