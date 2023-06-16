@@ -82,6 +82,8 @@ test:
 production:
   <<: *default
 
+  entry: ./app/javascript/packs/application.js
+
   # Production depends on precompilation of packs prior to booting for performance.
   compile: false
 
