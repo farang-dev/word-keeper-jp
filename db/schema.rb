@@ -10,7 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema[7.0].define(version: 2023_06_18_104944) do
+=======
+ActiveRecord::Schema[7.0].define(version: 2023_06_18_100220) do
+>>>>>>> 07c7a27 (dev env works)
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -32,12 +36,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_18_104944) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "word_type"
-    t.text "translations", default: [], array: true
+    t.string "translations", default: [], array: true
     t.text "example_sentences", default: [], array: true
     t.text "kanji_details", default: [], array: true
     t.string "reading"
-    t.string "jptitle"
-    t.text "jpdescription"
     t.index ["user_id"], name: "index_words_on_user_id"
   end
 

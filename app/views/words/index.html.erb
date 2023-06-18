@@ -6,10 +6,11 @@
       <% @words.each do |word| %>
         <div class="card my-3">
           <div class="word card-body">
-            <h3><%= word.jptitle %></h3>
+            <h3><%= word.title %></h3>
             <p><strong>Reading:</strong> <%= word.reading %></p>
             <p><strong>Type:</strong> <%= word.word_type %></p>
             <p><strong>Translations:</strong> <%= word.translations.join(', ') %></p>
+            <p><strong>Example Sentences:</strong></p>
             <% word.example_sentences.each do |sentence| %>
               <p><%= sentence %></p>
             <% end %>

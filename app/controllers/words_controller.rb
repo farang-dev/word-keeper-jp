@@ -7,12 +7,12 @@ class WordsController < ApplicationController
   end
 
   def create
-    word_jptitle = params[:word][:jptitle]
-    word_data = fetch_word_data(word_jptitle)
+    word_title = params[:word][:title]
+    word_data = fetch_word_data(word_title)
 
     @word = current_user.words.build(
-      jptitle: word_jptitle,
-      jpdescription: word_data[:jpdescription],
+      title: word_title,
+      description: word_data[:description],
       reading: word_data[:reading],
       translations: word_data[:translations],
       word_type: word_data[:word_type]
@@ -56,7 +56,7 @@ class WordsController < ApplicationController
 
     if json['data'].empty?
       return {
-        jpdescription: 'No definition available',
+        description: 'No definition available',
         reading: '',
         translations: [],
         example_sentences: [],
@@ -68,7 +68,7 @@ class WordsController < ApplicationController
     data = json['data'][0]
     senses = data['senses']
 
-    jpdescription = senses&.map { |sense| sense['english_definitions'] }&.flatten&.join(', ')
+    description = senses&.map { |sense| sense['english_definitions'] }&.flatten&.join(', ')
     reading = data['japanese']&.map { |japanese| japanese['reading'] }&.join(', ')
     translations = senses&.map { |sense| sense['english_definitions'] }&.flatten || []
     example_sentences = []
@@ -98,12 +98,12 @@ class WordsController < ApplicationController
     end
 
     {
-      jpdescription: jpdescription,
-      reading: reading,
+      description: description || 'No definition available',
+      reading: reading || '',
       translations: translations,
       example_sentences: example_sentences,
       kanji_details: kanji_details,
       word_type: word_type
-    }
-  end
-end
+      }
+      end
+      end
