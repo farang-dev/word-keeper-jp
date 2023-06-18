@@ -69,7 +69,8 @@ class WordsController < ApplicationController
     senses = data['senses']
 
     description = senses&.map { |sense| sense['english_definitions'] }&.flatten&.join(', ')
-    reading = data['japanese']&.map { |japanese| japanese['reading'] }&.join(', ')
+    japanese_data = data['japanese'].first
+    reading = japanese_data['reading'] if japanese_data && japanese_data['reading']
     translations = senses&.map { |sense| sense['english_definitions'] }&.flatten || []
     example_sentences = []
     kanji_details = []
@@ -104,6 +105,7 @@ class WordsController < ApplicationController
       example_sentences: example_sentences,
       kanji_details: kanji_details,
       word_type: word_type
-      }
-      end
+    }
+  end
+
       end
