@@ -7,7 +7,22 @@
         <div class="card my-3">
           <div class="word card-body">
             <h3><%= word.title %></h3>
-            <p><strong>Definition:</strong> <%= word.description %></p>
+            <p><strong>Reading:</strong> <%= word.reading %></p>
+            <p><strong>Type:</strong> <%= word.word_type %></p>
+            <p><strong>Translations:</strong> <%= word.translations.join(', ') %></p>
+            <p><strong>Example Sentences:</strong></p>
+            <% word.example_sentences.each do |sentence| %>
+              <p><%= sentence %></p>
+            <% end %>
+            <% if word.kanji_details.present? %>
+              <p><strong>Kanji Details:</strong></p>
+              <% word.kanji_details.each do |kanji| %>
+                <p><strong>Kanji:</strong> <%= kanji[:kanji] %></p>
+                <p><strong>Meanings:</strong> <%= kanji[:meanings].join(', ') %></p>
+                <p><strong>Readings:</strong> <%= kanji[:readings].join(', ') %></p>
+                <p><strong>Stroke Order:</strong> <%= kanji[:stroke_order] %></p>
+              <% end %>
+            <% end %>
             <p class="card-timestamp"><%= word.created_at.strftime("%B %d, %Y") %></p>
             <%= form_with model: word, url: word_path(word), method: :delete, data: { turbo_frame: "results", turbo_confirm: "Delete the word?" } do |f| %>
               <%= f.submit "Done!", class: "button-done" %>

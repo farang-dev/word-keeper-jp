@@ -1,4 +1,4 @@
-require 'open-uri'
+require 'net/http'
 
 class WordsController < ApplicationController
   def index
@@ -8,10 +8,23 @@ class WordsController < ApplicationController
 
   def create
     word_title = params[:word][:title]
-    description = fetch_word_description(word_title)
+    word_data = fetch_word_data(word_title)
 
-    @word = Word.new(title: word_title, description: description)
-    @word.user = current_user
+    @word = current_user.words.build(
+      title: word_title,
+      description: word_data[:description],
+      reading: word_data[:reading],
+      translations: word_data[:translations],
+      word_type: word_data[:word_type]
+    )
+
+    example_sentences = word_data[:example_sentences]
+    example_sentences = [] if example_sentences.empty?
+    @word.example_sentences = example_sentences
+
+    kanji_details = word_data[:kanji_details]
+    kanji_details = [] if kanji_details.empty?
+    @word.kanji_details = kanji_details
 
     respond_to do |format|
       if @word.save
@@ -25,27 +38,72 @@ class WordsController < ApplicationController
   end
 
   def destroy
-    @word = Word.find(params[:id])
+    @word = current_user.words.find(params[:id])
     @word.destroy
     redirect_to words_path
   end
 
-  def fetch_word_description(word)
-    response = URI.open("https://api.dictionaryapi.dev/api/v2/entries/en/#{word}")
-    json = JSON.parse(response.read)
-    definition = json[0]['meanings'][0]['definitions'][0]['definition']
-    return definition if definition.present?
+  def fetch_word_data(word)
+    encoded_word = URI.encode_www_form_component(word)
+    url = URI.parse("https://jisho.org/api/v1/search/words?keyword=#{encoded_word}")
 
-    # Handle the case where no definition is found
-    'No definition available'
-  rescue OpenURI::HTTPError => e
-    case e.io.status[0]
-    when "404"
-      'Unable to fetch definition: Word not found'
-    when "500"
-      'Unable to fetch definition: Internal server error'
-    else
-      'Unable to fetch definition: HTTP Error'
+    http = Net::HTTP.new(url.host, url.port)
+    http.use_ssl = true
+
+    request = Net::HTTP::Get.new(url.request_uri)
+    response = http.request(request)
+    json = JSON.parse(response.body)
+
+    if json['data'].empty?
+      return {
+        description: 'No definition available',
+        reading: '',
+        translations: [],
+        example_sentences: [],
+        kanji_details: [],
+        word_type: ''
+      }
     end
-  end
-end
+
+    data = json['data'][0]
+    senses = data['senses']
+
+    description = senses&.map { |sense| sense['english_definitions'] }&.flatten&.join(', ')
+    reading = data['japanese']&.map { |japanese| japanese['reading'] }&.join(', ')
+    translations = senses&.map { |sense| sense['english_definitions'] }&.flatten || []
+    example_sentences = []
+    kanji_details = []
+    word_type = senses&.map { |sense| sense['parts_of_speech'] }&.flatten&.first || ''
+
+    senses&.each do |sense|
+      next unless sense['japanese']
+      sense['japanese'].each do |japanese|
+        example_sentences << japanese['word'] if japanese['word']
+      end
+    end
+
+    data['japanese']&.each do |japanese|
+      next unless japanese['word'] && japanese['senses'] && japanese['senses'][0]
+      kanji = japanese['word']
+      meanings = japanese['senses'][0]['english_definitions']
+      readings = japanese['reading']
+      stroke_order = kanji&.gsub(/[^[:alnum:]]/, '')
+
+      kanji_details << {
+        kanji: kanji,
+        meanings: meanings,
+        readings: readings,
+        stroke_order: stroke_order
+      }
+    end
+
+    {
+      description: description || 'No definition available',
+      reading: reading || '',
+      translations: translations,
+      example_sentences: example_sentences,
+      kanji_details: kanji_details,
+      word_type: word_type
+      }
+      end
+      end
