@@ -9,7 +9,7 @@
             <h3><%= word.title %></h3>
             <p><strong>Reading:</strong> <%= word.reading %></p>
             <p><strong>Type:</strong> <%= word.word_type %></p>
-            <p><strong>Translations:</strong> <%= word.translations.join(', ') %></p>
+            <p><strong>Definition:</strong> <%= word.translations.join(', ') %></p>
             <% word.example_sentences.each do |sentence| %>
               <p><%= sentence %></p>
             <% end %>
